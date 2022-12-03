@@ -120,11 +120,14 @@ def process_media(*media,
     with open(f"{image}.cue", "w") as handle:
         sh(cue_cmd, stdout=handle)
     cue_fix_bin_imgname(image)
-    bin_cmd = ["shntool", "join", "-O", "always", 
-                                  "-d", out_dir]
-    bin_cmd.extend(media)
-    sh(bin_cmd)
-    rename(default_image, f"{image}.bin")
+    if len(media) > 1:
+        bin_cmd = ["shntool", "join", "-O", "always", 
+                                      "-d", out_dir]
+        bin_cmd.extend(media)
+        sh(bin_cmd)
+        rename(default_image, f"{image}.bin")
+    elif len(media) == 1:
+        rename(media[0], f"${image}.bin")
     return f"{image}.bin", f"{image}.cue"
 
 def check_requirements():
