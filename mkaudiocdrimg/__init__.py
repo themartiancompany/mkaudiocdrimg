@@ -1,5 +1,29 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Make an audio CD-R image from media files."""
+
+#    mkaudiocdrimg
+#
+#    ----------------------------------------------------------------------
+#    Copyright © 2022  Pellegrino Prevete
+#
+#    All rights reserved
+#    ----------------------------------------------------------------------
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
 from appdirs import *
 from argparse import ArgumentParser
 import os
@@ -10,7 +34,7 @@ from os.path import join as path_join
 from pathlib import Path
 import subprocess
 from subprocess import run as sh
-import tempfile
+from shutil import which
 
 app_details = ("mkaudiocdrimg", "Pellegrino Prevete")
 dirs = {'data': user_data_dir(*app_details),
@@ -102,7 +126,13 @@ def process_media(*media,
     rename(default_image, f"{image}.bin")
     return f"{image}.bin", f"{image}.cue"
 
+def check_requirements():
+    if not which("shntool"):
+        print("This program needs 'shntool' to work. Please install it.")
+        exit()
+
 def main():
+    check_requirements()
     parser_args = {"description": "Make an audio CD-R image from media files."}
     parser = ArgumentParser(**parser_args)
 
