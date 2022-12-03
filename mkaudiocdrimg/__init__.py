@@ -97,7 +97,7 @@ def preprocess_media(*media,
             media_out.add(out)
         else:
             media_out.add(m)
-    return media_out
+    return list(media_out)
 
 def cue_fix_bin_imgname(image):
     imgname = basename(image)
