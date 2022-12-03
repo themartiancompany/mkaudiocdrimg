@@ -26,9 +26,8 @@
 
 from appdirs import *
 from argparse import ArgumentParser
-import os
 import mimetypes
-from os import chmod, getcwd, makedirs, rename, umask, walk
+from os import getcwd, makedirs, rename, umask, walk
 from os.path import abspath, basename, exists, isdir
 from os.path import join as path_join
 from pathlib import Path
@@ -92,7 +91,9 @@ def preprocess_media(*media,
                                 "-ar", "44100",
                                 "-sample_fmt", "s16",
                                 out]
-            sh(pp_cmd)
+            sh(pp_cmd,
+               stdout=subprocess.DEVNULL,
+               stderr=subprocess.STDOUT)
             media_out.add(out)
         else:
             media_out.add(m)
