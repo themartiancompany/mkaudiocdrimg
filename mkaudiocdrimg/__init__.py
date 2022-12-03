@@ -127,7 +127,7 @@ def process_media(*media,
         sh(bin_cmd)
         rename(default_image, f"{image}.bin")
     elif len(media) == 1:
-        rename(media[0], f"${image}.bin")
+        rename(media[0], f"{image}.bin")
     return f"{image}.bin", f"{image}.cue"
 
 def check_requirements():
