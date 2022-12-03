@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Make an Audio CD-R image from media files."""
+"""Make an audio CD-R image from media files."""
 from appdirs import *
 from argparse import ArgumentParser
 import os
@@ -103,7 +103,7 @@ def process_media(*media,
     return f"{image}.bin", f"{image}.cue"
 
 def main():
-    parser_args = {"description": "Make an Audio CD-R image from media files."}
+    parser_args = {"description": "Make an audio CD-R image from media files."}
     parser = ArgumentParser(**parser_args)
 
     media_source = {'args': ['media_source'],
