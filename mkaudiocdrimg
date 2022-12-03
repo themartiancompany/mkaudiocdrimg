@@ -103,7 +103,7 @@ def process_media(*media,
     return f"{image}.bin", f"{image}.cue"
 
 def main():
-    parser_args = {"description": "PlayStation SoundScope player"}
+    parser_args = {"description": "Make an Audio CD-R image from media files."}
     parser = ArgumentParser(**parser_args)
 
     media_source = {'args': ['media_source'],
