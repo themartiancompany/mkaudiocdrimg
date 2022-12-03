@@ -131,6 +131,15 @@ def check_requirements():
         print("This program needs 'shntool' to work. Please install it.")
         exit()
 
+def mkimg(*media_src,
+          out_dir=getcwd(),
+          image_name="joined"):
+    media = discover_media_source(*media_src)
+    img_bin, img_cue = process_media(*media,
+                                     out_dir=out_dir,
+                                     image_name=image_name)
+    return img_bin, img_cue
+
 def main():
     check_requirements()
     parser_args = {"description": "Make an audio CD-R image from media files."}
@@ -174,10 +183,9 @@ def main():
 
     args = parser.parse_args()
 
-    media = discover_media_source(*args.media_source)
-    img_bin, img_cue = process_media(*media,
-                                     out_dir=args.out_dir,
-                                     image_name=args.image_name)
+    mkimg(*args.media_source,
+          out_dir=args.out_dir,
+          image_name=args.image_name)
 
 if __name__ == "__main__":
     main()
