@@ -120,14 +120,17 @@ def process_media(*media,
     with open(f"{image}.cue", "w") as handle:
         sh(cue_cmd, stdout=handle)
     cue_fix_bin_imgname(image)
-    if len(media) > 1:
-        bin_cmd = ["shntool", "join", "-O", "always", 
-                                      "-d", out_dir]
-        bin_cmd.extend(media)
-        sh(bin_cmd)
-        rename(default_image, f"{image}.bin")
-    elif len(media) == 1:
-        rename(media[0], f"{image}.bin")
+    bin_cmd = ["shntool", "join", "-O", "always", 
+                                  "-d", out_dir]
+    bin_cmd.extend(media)
+    if len(media) == 1:
+        gen_cmd = ["shntool", "gen", "-l", "3:00",
+                              "-d", dirs['cache']]
+        silence_path = path_join(dirs['cache'], "silence.wav")
+        sh(gen_cmd)
+        bin_cmd.append(silence_path)
+    sh(bin_cmd)
+    rename(default_image, f"{image}.bin")
     return f"{image}.bin", f"{image}.cue"
 
 def check_requirements():
