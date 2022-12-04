@@ -125,7 +125,8 @@ def process_media(*media,
     bin_cmd.extend(media)
     if len(media) == 1:
         gen_cmd = ["shntool", "gen", "-l", "3:00",
-                              "-d", dirs['cache']]
+                                     "-O", "always",
+                                     "-d", dirs['cache']]
         silence_path = path_join(dirs['cache'], "silence.wav")
         sh(gen_cmd)
         bin_cmd.append(silence_path)
