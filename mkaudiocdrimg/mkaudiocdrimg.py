@@ -42,17 +42,20 @@ import subprocess as _subprocess
 from subprocess import run as _sh
 from shutil import which
 
-app_details = (
+_app_details = (
   "mkaudiocdrimg",
   "Pellegrino Prevete"
 )
 dirs = {
   'data':
-    user_data_dir(*app_details),
+    user_data_dir(
+      *_app_details),
   'config':
-    user_config_dir(*app_details),
+    user_config_dir(
+      *_app_details),
   'cache':
-    user_cache_dir(*app_details)
+    user_cache_dir(
+      *_app_details)
 }
 
 def _discover_media_source(
