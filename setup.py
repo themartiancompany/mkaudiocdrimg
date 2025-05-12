@@ -42,4 +42,3 @@ _setup_kwargs = {
 }
 setup(
   **_setup_kwargs)
-)
