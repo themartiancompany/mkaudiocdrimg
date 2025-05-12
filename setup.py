@@ -29,7 +29,7 @@ _setup_kwargs = {
     find_packages(),
   "entry_points": {
     'console_scripts': [
-      'mkaudiocdrimg = mkaudiocdrimg:_main'] },
+      'mkaudiocdrimg = mkaudiocdrimg.mkaudiocdrimg:_main'] },
   "install_requires": [
       'appdirs',],
   "classifiers": [
