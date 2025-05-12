@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 """Make an audio CD-R image from media files."""
 
+#
 #    mkaudiocdrimg
 #
 #    ----------------------------------------------------------------------
-#    Copyright © 2022  Pellegrino Prevete
+#    Copyright © 2022, 2023, 2024, 2025  Pellegrino Prevete
 #
 #    All rights reserved
 #    ----------------------------------------------------------------------
@@ -35,165 +36,311 @@ import subprocess
 from subprocess import run as sh
 from shutil import which
 
-app_details = ("mkaudiocdrimg", "Pellegrino Prevete")
-dirs = {'data': user_data_dir(*app_details),
-        'config': user_config_dir(*app_details),
-        'cache': user_cache_dir(*app_details)}
+app_details = (
+  "mkaudiocdrimg",
+  "Pellegrino Prevete"
+)
+dirs = {
+  'data':
+    user_data_dir(*app_details),
+  'config':
+    user_config_dir(*app_details),
+  'cache':
+    user_cache_dir(*app_details)
+}
 
-def discover_media_source(*sources):
-    media = set()
-    mimetypes.init()
-    for src in sources:
-        src = abspath(src)
-        if not exists(src):
-            print(f"Resource at {src} not found, quitting...")
-            quit()
-        if isdir(src):
-            for _dir, _dirs, _files in walk(src):
-                for file in _files:
-                    filename = path_join(src, _dir, file) 
-                    if is_media(filename):
-                        media.add(filename)
-        else:
-            if is_media(src):
-                media.add(src)
-    return media
+def discover_media_source(
+      *sources):
+  media = set()
+  mimetypes.init()
+  for src in sources:
+    src = abspath(
+            src)
+    if not exists(
+             src):
+      print(
+        f"Resource at {src} not found, quitting...")
+      quit()
+    if isdir(
+         src):
+      for _dir, _dirs, _files in walk(src):
+        for file in _files:
+          filename = path_join(src, _dir, file) 
+          if is_media(
+               filename):
+            media.add(filename)
+    else:
+      if is_media(
+           src):
+        media.add(src)
+  return media
 
-def is_media(filename):
-    mimestart = mimetypes.guess_type(filename)[0]
-    if mimestart != None:
-        mimestart = mimestart.split('/')[0]
-        if mimestart in ['audio', 'video']:
-            return True
+def is_media(
+      filename):
+  mimestart = mimetypes.guess_type(
+                filename)[
+                  0]
+  if mimestart != None:
+    mimestart = mimestart.split(
+                  '/')[
+                    0]
+    if mimestart in ['audio',
+                     'video']:
+      return True
 
-def set_tmpdir(tmp_dir=dirs['cache']):
-    original_umask = umask(0)
-    path = path_join(tmp_dir, "convert")
-    try:
-        makedirs(path, 0o700, exist_ok=True)
-    except OSError:
-        pass
-    umask(original_umask)
+def set_tmpdir(
+      tmp_dir=dirs[
+                'cache']):
+  original_umask = umask(
+                     0)
+  path = path_join(
+           tmp_dir,
+           "convert")
+  try:
+    makedirs(
+      path,
+      0o700,
+      exist_ok=True)
+  except OSError:
+    pass
+  umask(
+    original_umask)
 
-def preprocess_media(*media,
-                     tmp_dir=dirs['cache']):
-    media_out = set()
-    set_tmpdir(tmp_dir)
-    for m in media:
-        if not m.endswith('.flac'):
-            print(f"converting {m}")
-            out = path_join(tmp_dir,
-                            "convert",
-                            Path(basename(m)).with_suffix('.flac'))
-            pp_cmd = ["ffmpeg", "-y",
-                                "-i", m,
-                                "-c:a", "flac",
-                                "-ar", "44100",
-                                "-sample_fmt", "s16",
-                                out]
-            sh(pp_cmd,
-               stdout=subprocess.DEVNULL,
-               stderr=subprocess.STDOUT)
-            media_out.add(out)
-        else:
-            media_out.add(m)
-    return list(media_out)
+def preprocess_media(
+      *media,
+      tmp_dir=dirs[
+                'cache']):
+  media_out = set()
+  set_tmpdir(
+    tmp_dir)
+  for m in media:
+    if not m.endswith(
+             '.flac'):
+      print(
+        f"converting {m}")
+      out = path_join(
+              tmp_dir,
+              "convert",
+            Path(
+              basename(
+                m)).with_suffix(
+              '.flac'))
+      pp_cmd = [
+        "ffmpeg",
+          "-y",
+          "-i",
+            m,
+          "-c:a",
+            "flac",
+          "-ar",
+            "44100",
+          "-sample_fmt",
+            "s16",
+          out]
+      sh(
+        pp_cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT)
+      media_out.add(
+        out)
+    else:
+      media_out.add(
+        m)
+  return list(
+           media_out)
 
-def cue_fix_bin_imgname(image):
-    imgname = basename(image)
-    with open(f"{image}.cue", "r") as handle:
-        text = handle.read()
-    with open(f"{image}.cue", "w") as handle:
-        handle.write(text.replace("joined.wav",
-                                  f"{imgname}.bin"))
+def cue_fix_bin_imgname(
+      image):
+  imgname = basename(
+              image)
+  with open(
+         f"{image}.cue",
+         "r") as handle:
+    text = handle.read()
+  with open(
+         f"{image}.cue",
+         "w") as handle:
+    handle.write(
+      text.replace(
+        "joined.wav",
+        f"{imgname}.bin"))
 
-def process_media(*media,
-                  out_dir=getcwd(),
-                  image_name="out",
-                  tmp_dir=dirs['cache']):
-    default_image = path_join(out_dir, "joined.wav")
-    image = path_join(out_dir, image_name)
-    media = preprocess_media(*media,
-                             tmp_dir=tmp_dir)
-    cue_cmd = ["shntool", "cue"]
-    cue_cmd.extend(media)
-    with open(f"{image}.cue", "w") as handle:
-        sh(cue_cmd, stdout=handle)
-    cue_fix_bin_imgname(image)
-    bin_cmd = ["shntool", "join", "-O", "always", 
-                                  "-d", out_dir]
-    bin_cmd.extend(media)
-    if len(media) == 1:
-        gen_cmd = ["shntool", "gen", "-l", "3:00",
-                                     "-O", "always",
-                                     "-d", dirs['cache']]
-        silence_path = path_join(dirs['cache'], "silence.wav")
-        sh(gen_cmd)
-        bin_cmd.append(silence_path)
-    sh(bin_cmd)
-    rename(default_image, f"{image}.bin")
-    return f"{image}.bin", f"{image}.cue"
+def process_media(
+      *media,
+      out_dir=getcwd(),
+      image_name="out",
+      tmp_dir=dirs[
+                'cache']):
+  default_image = path_join(
+                    out_dir,
+                    "joined.wav")
+  image = path_join(
+            out_dir,
+            image_name)
+  media = preprocess_media(
+            *media,
+            tmp_dir=tmp_dir)
+  cue_cmd = [
+    "shntool",
+    "cue"]
+  cue_cmd.extend(
+    media)
+  with open(
+         f"{image}.cue",
+         "w") as handle:
+    sh(
+      cue_cmd,
+      stdout=handle)
+  cue_fix_bin_imgname(
+    image)
+  bin_cmd = [
+    "shntool",
+    "join",
+      "-O",
+        "always", 
+      "-d",
+      out_dir]
+  bin_cmd.extend(
+    media)
+  if len(
+       media) == 1:
+    gen_cmd = [
+      "shntool",
+      "gen",
+        "-l",
+          "3:00",
+        "-O",
+          "always",
+        "-d",
+          dirs[
+            'cache']]
+    silence_path = path_join(
+                     dirs[
+                       'cache'],
+                     "silence.wav")
+    sh(
+      gen_cmd)
+    bin_cmd.append(
+      _silence_path)
+    sh(
+      bin_cmd)
+  rename(
+    default_image,
+    f"{image}.bin")
+  return f"{image}.bin", f"{image}.cue"
 
 def check_requirements():
-    if not which("shntool"):
-        print("This program needs 'shntool' to work. Please install it.")
-        exit()
+  if not which(
+           "shntool"):
+    print(
+      ("This program needs 'shntool' "
+       "to work. Please install it."))
+    exit()
 
-def mkimg(*media_src,
-          out_dir=getcwd(),
-          image_name="joined"):
-    media = discover_media_source(*media_src)
-    img_bin, img_cue = process_media(*media,
-                                     out_dir=out_dir,
-                                     image_name=image_name)
-    return img_bin, img_cue
+def mkimg(
+      *media_src,
+      out_dir=getcwd(),
+      image_name="joined"):
+  media = discover_media_source(
+            *media_src)
+  img_bin, img_cue = process_media(
+                       *media,
+                       out_dir=out_dir,
+                       image_name=image_name)
+  return img_bin, img_cue
 
 def main():
-    check_requirements()
-    parser_args = {"description": "Make an audio CD-R image from media files."}
-    parser = ArgumentParser(**parser_args)
-
-    media_source = {'args': ['media_source'],
-                    'kwargs': {'nargs': '+',
-                               'action': 'store',
-                               'help': ("media source; "
-                                        "default: current directory")}}
-
-    out_dir = {'args': ['--out-dir'],
-               'kwargs': {'dest': 'out_dir',
-                          'action': 'store',
-                          'default': getcwd(),
-                          'help': ("output directory; "
-                                   "default: current")}}
-
-    image_name = {'args': ['--image-name'],
-                  'kwargs': {'dest': 'image_name',
-                            'action': 'store',
-                            'default': 'joined',
-                            'help': ("name of the resulting image; "
-                                     "default: joined")}}
-
-    tmp_dir = {'args': ['--tmp-dir'],
-               'kwargs': {'dest': 'tmp_dir',
-                          'action': 'store',
-                          'default': dirs['cache'],
-                          'help': ("output directory; "
-                                   "default: user")}}
-
-    parser.add_argument(*media_source['args'],
-                        **media_source['kwargs'])
-    parser.add_argument(*out_dir['args'],
-                        **out_dir['kwargs'])
-    parser.add_argument(*image_name['args'],
-                        **image_name['kwargs'])
-    parser.add_argument(*tmp_dir['args'],
-                        **tmp_dir['kwargs'])
-
-    args = parser.parse_args()
-
-    mkimg(*args.media_source,
-          out_dir=args.out_dir,
-          image_name=args.image_name)
+  check_requirements()
+  parser_args = {
+    "description":
+      "Make an audio CD-R image from media files."
+  }
+  parser = ArgumentParser(
+             **parser_args)
+  media_source = {
+    'args': [
+      'media_source'],
+    'kwargs': {
+      'nargs':
+        '+',
+      'action':
+        'store',
+      'help':
+        ("media source; "
+         "default: current directory")
+    }
+  }
+  out_dir = {
+    'args': [
+      '--out-dir'],
+    'kwargs': {
+      'dest':
+        'out_dir',
+      'action':
+        'store',
+      'default':
+        getcwd(),
+    'help':
+      ("output directory; "
+       "default: current")
+    }
+  }
+  image_name = {
+    'args': [
+      '--image-name'],
+    'kwargs': {
+      'dest':
+        'image_name',
+      'action':
+        'store',
+      'default':
+        'joined',
+      'help':
+        ("name of the resulting image; "
+         "default: joined")
+    }
+  }
+  tmp_dir = {
+    'args': [
+      '--tmp-dir'],
+    'kwargs': {
+      'dest':
+        'tmp_dir',
+      'action':
+        'store',
+      'default':
+        dirs[
+          'cache'],
+      'help':
+        ("output directory; "
+         "default: user")
+    }
+  }
+  parser.add_argument(
+    *media_source[
+      'args'],
+    **media_source[
+      'kwargs'])
+  parser.add_argument(
+    *out_dir[
+      'args'],
+    **out_dir[
+      'kwargs'])
+  parser.add_argument(
+    *image_name[
+      'args'],
+    **image_name[
+      'kwargs'])
+  parser.add_argument(
+    *tmp_dir[
+      'args'],
+    **tmp_dir[
+      'kwargs'])
+  args = parser.parse_args()
+  mkimg(
+    *args.media_source,
+    out_dir=args.out_dir,
+    image_name=args.image_name)
 
 if __name__ == "__main__":
     main()
