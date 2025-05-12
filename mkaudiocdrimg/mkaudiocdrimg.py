@@ -38,8 +38,8 @@ from os.path import exists as _path_exists
 from os.path import isdir as _path_is_dir
 from os.path import join as _path_join
 from pathlib import Path
-import subprocess
-from subprocess import run as sh
+import subprocess as _subprocess
+from subprocess import run as _sh
 from shutil import which
 
 app_details = (
@@ -149,10 +149,10 @@ def _preprocess_media(
           "-sample_fmt",
             "s16",
           _out]
-      sh(
+      _sh(
         _pp_cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.STDOUT)
+        stdout=_subprocess.DEVNULL,
+        stderr=_subprocess.STDOUT)
       _media_out.add(
         _out)
     else:
@@ -200,7 +200,7 @@ def process_media(
   with open(
          f"{_image}.cue",
          "w") as _handle:
-    sh(
+    _sh(
       _cue_cmd,
       stdout=_handle)
   _cue_fix_bin_imgname(
@@ -231,11 +231,11 @@ def process_media(
                       dirs[
                         'cache'],
                       "silence.wav")
-    sh(
+    _sh(
       _gen_cmd)
     _bin_cmd.append(
       _silence_path)
-    sh(
+    _sh(
       _bin_cmd)
   rename(
     _default_image,
