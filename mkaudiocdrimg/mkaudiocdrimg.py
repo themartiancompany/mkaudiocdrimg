@@ -269,7 +269,7 @@ def _main():
   _check_requirements()
   _parser_args = {
     "description":
-      "Make an audio CD-R image from media files."
+      "Produces an audio CD-R image from media files."
   }
   _parser = ArgumentParser(
               **_parser_args)

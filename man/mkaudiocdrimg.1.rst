@@ -26,7 +26,7 @@ mkaudiocdrimg
 =================
 
 --------------------------------------------------------------
-Makes an audio CD-R image from media files
+Produces an audio CD-R image from media files
 --------------------------------------------------------------
 :Version: mkaudiocdrimg |version|
 :Manual section: 1
@@ -39,7 +39,9 @@ mkaudiocdrimg *[options]* *[media-source]*
 Description
 ===========
 
-Makes an audio CD-R image from media files.
+Python program and module which produces
+an audio CD-R image from media files using
+ffmpeg and shntool.
 
 
 Positional arguments
