@@ -25,5 +25,8 @@
 mkaudiocdrimg Authors
 =====================================
 
-* Pellegrino Prevete <pellegrinoprevete@gmail.com>
-* Truocolo <truocolo@aol.com>
+* Pellegrino Prevete
+    - <pellegrinoprevete@gmail.com>
+* Truocolo
+    - <truocolo@aol.com>
+    - <truocolo@0x6E5163fC4BFc1511Dbe06bB605cc14a3e462332b>
