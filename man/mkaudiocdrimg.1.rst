@@ -47,8 +47,8 @@ ffmpeg and shntool.
 Positional arguments
 =======================
 
-media_source              Media file or a directory containing
-                          media files.
+* media_source             Media file or a directory containing
+                           media files.
 
 
 Options
