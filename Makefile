@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 #    ----------------------------------------------------------------------
-#    Copyright © 2024, 2025  Pellegrino Prevete
+#    Copyright © 2022, 2023, 2024, 2025  Pellegrino Prevete
 #
 #    All rights reserved
 #    ----------------------------------------------------------------------
