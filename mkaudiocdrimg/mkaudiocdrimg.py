@@ -193,6 +193,9 @@ def _process_media(
   _image = _path_join(
              _out_dir,
              _image_name)
+  if _verbose:
+    print(
+      f"[mkaudiocdrimg] INFO: Playing '{_media}'")
   _media = _preprocess_media(
              *_media,
              _tmp_dir=_tmp_dir)
@@ -262,6 +265,9 @@ def _mkimg(
       _out_dir=getcwd(),
       _image_name="joined",
       _verbose=False):
+  if _verbose:
+    print(
+      "[mkaudiocdrimg] INFO: Making '{_media_src}' into a CDR image.")
   _media = _discover_media_source(
              *_media_src)
   _img_bin, _img_cue = _process_media(
