@@ -24,7 +24,7 @@ _PROJECT=mkaudiocdrimg
 DOC_DIR=$(DESTDIR)$(PREFIX)/share/doc/$(_PROJECT)
 BIN_DIR=$(DESTDIR)$(PREFIX)/bin
 LIB_DIR=$(DESTDIR)$(PREFIX)/lib/$(_PROJECT)
-MAN_DIR?=$(DESTDIR)$(PREFIX)/share/man
+MAN_DIR=$(DESTDIR)$(PREFIX)/share/man
 
 DOC_FILES=\
   $(wildcard \
