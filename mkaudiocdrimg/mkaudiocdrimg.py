@@ -59,7 +59,8 @@ dirs = {
 }
 
 def _discover_media_source(
-      *sources):
+      *sources,
+      _verbose=False):
   _media = set()
   _mimetypes.init()
   for _src in sources:
@@ -83,6 +84,10 @@ def _discover_media_source(
                _filename):
             _media.add(
               _filename)
+          else:
+            if _verbose:
+              print(
+                f"[mkaudiocdrimg] INFO: Skipping {_filename}")
     else:
       if _is_media(
            _src):
@@ -267,9 +272,13 @@ def _mkimg(
       _verbose=False):
   if _verbose:
     print(
-      "[mkaudiocdrimg] INFO: Making '{_media_src}' into a CDR image.")
+      f"[mkaudiocdrimg] INFO: Making '{_media_src}' into a CDR image.")
   _media = _discover_media_source(
-             *_media_src)
+             *_media_src,
+             _verbose=_verbose)
+  if _verbose:
+    print(
+      f"[mkaudiocdrimg] INFO: Found '{_media}'.")
   _img_bin, _img_cue = _process_media(
                          *_media,
                          _out_dir=_out_dir,
