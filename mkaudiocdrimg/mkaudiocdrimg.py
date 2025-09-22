@@ -180,7 +180,7 @@ def _cue_fix_bin_imgname(
         "joined.wav",
         f"{imgname}.bin"))
 
-def process_media(
+def _process_media(
       *_media,
       _out_dir=getcwd(),
       _image_name="out",
