@@ -185,7 +185,8 @@ def _process_media(
       _out_dir=getcwd(),
       _image_name="out",
       _tmp_dir=dirs[
-                'cache']):
+                'cache'],
+      _verbose=False):
   _default_image = _path_join(
                      _out_dir,
                      "joined.wav")
@@ -200,6 +201,9 @@ def _process_media(
     "cue"]
   _cue_cmd.extend(
     _media)
+  if _verbose:
+    print(
+      f"[mkaudiocdrimg] INFO: Running {_cue_cmd}")
   with open(
          f"{_image}.cue",
          "w") as _handle:
@@ -256,13 +260,15 @@ def _check_requirements():
 def _mkimg(
       *_media_src,
       _out_dir=getcwd(),
-      _image_name="joined"):
+      _image_name="joined",
+      _verbose=False):
   _media = _discover_media_source(
              *_media_src)
   _img_bin, _img_cue = _process_media(
                          *_media,
                          _out_dir=_out_dir,
-                         _image_name=_image_name)
+                         _image_name=_image_name,
+                         _verbose=_verbose)
   return _img_bin, _img_cue
 
 def _main():
@@ -332,6 +338,21 @@ def _main():
          "default: user")
     }
   }
+  _verbose = {
+    'args': [
+      '--verbose'],
+    'kwargs': {
+      'dest':
+        'verbose',
+      'action':
+        'store_true',
+      'default':
+        False,
+      'help':
+        ("verbose output; "
+         "default: False")
+    }
+  }
   _parser.add_argument(
     *_media_source[
       'args'],
@@ -352,8 +373,14 @@ def _main():
       'args'],
     **_tmp_dir[
       'kwargs'])
+  _parser.add_argument(
+    *_verbose[
+      'args'],
+    **_verbose[
+      'kwargs'])
   _args = _parser.parse_args()
   _mkimg(
     *_args.media_source,
     _out_dir=_args.out_dir,
-    _image_name=_args.image_name)
+    _image_name=_args.image_name,
+    _verbose=_args.verbose)
